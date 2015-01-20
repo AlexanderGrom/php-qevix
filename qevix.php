@@ -14,8 +14,8 @@ class Qevix
 	const TAG_QUOTE = 0x100;
 	const TEXT_QUOTE = 0x200;
 	const TEXT_BRACKET = 0x400;
-	const URL = 0x800;
-	const SPECIAL_CHAR = 0x1000;
+	const SPECIAL_CHAR = 0x800;
+	//const = 0x1000;
 	//const = 0x2000;
 	//const = 0x4000;
 	//const = 0x8000;
@@ -25,7 +25,8 @@ class Qevix
 	public $specilChars = array();
 	public $entities = array('"'=>'&#34;', "'"=>'&#39;', '<'=>'&#60;', '>'=>'&#62;', '&'=>'&#38;');
 	public $quotes = array(array('«', '»'), array('„', '“'));
-	public $brackets = array('['=>']', '{'=>'}');
+	public $bracketsALL = array('<'=>'>', '['=>']', '{'=>'}', '('=>')');
+	public $bracketsSPC = array('['=>']', '{'=>'}');
 	public $dash = "—";
 	public $nl = "\n";
 	
@@ -89,7 +90,7 @@ class Qevix
 	/**
 	 * Классы символов из symbolclass.php
 	 */
-	protected $charClasses = array(0=>65536,1=>65536,2=>65536,3=>65536,4=>65536,5=>65536,6=>65536,7=>65536,8=>65536,9=>16,10=>32,11=>65536,12=>65536,13=>32,14=>65536,15=>65536,16=>65536,17=>65536,18=>65536,19=>65536,20=>65536,21=>65536,22=>65536,23=>65536,24=>65536,25=>65536,26=>65536,27=>65536,28=>65536,29=>65536,30=>65536,31=>65536,32=>16,97=>2243,98=>2243,99=>2243,100=>2243,101=>2243,102=>2243,103=>2243,104=>2243,105=>2243,106=>2243,107=>2243,108=>2243,109=>2243,110=>2243,111=>2243,112=>2243,113=>2243,114=>2243,115=>2243,116=>2243,117=>2243,118=>2243,119=>2243,120=>2243,121=>2243,122=>2243,65=>2243,66=>2243,67=>2243,68=>2243,69=>2243,70=>2243,71=>2243,72=>2243,73=>2243,74=>2243,75=>2243,76=>2243,77=>2243,78=>2243,79=>2243,80=>2243,81=>2243,82=>2243,83=>2243,84=>2243,85=>2243,86=>2243,87=>2243,88=>2243,89=>2243,90=>2243,48=>2245,49=>2245,50=>2245,51=>2245,52=>2245,53=>2245,54=>2245,55=>2245,56=>2245,57=>2245,34=>769,39=>257,46=>2057,44=>9,33=>9,63=>2057,58=>2057,59=>2057,47=>2049,38=>2049,37=>2049,45=>2049,95=>2049,61=>2049,43=>2049,35=>6145,124=>2049,64=>4097,36=>4097,60=>1025,62=>1025,91=>1025,93=>1025,123=>1025,125=>1025,40=>1025,41=>1025);
+	protected $charClasses = array(0=>65536,1=>65536,2=>65536,3=>65536,4=>65536,5=>65536,6=>65536,7=>65536,8=>65536,9=>16,10=>32,11=>65536,12=>65536,13=>32,14=>65536,15=>65536,16=>65536,17=>65536,18=>65536,19=>65536,20=>65536,21=>65536,22=>65536,23=>65536,24=>65536,25=>65536,26=>65536,27=>65536,28=>65536,29=>65536,30=>65536,31=>65536,32=>16,97=>195,98=>195,99=>195,100=>195,101=>195,102=>195,103=>195,104=>195,105=>195,106=>195,107=>195,108=>195,109=>195,110=>195,111=>195,112=>195,113=>195,114=>195,115=>195,116=>195,117=>195,118=>195,119=>195,120=>195,121=>195,122=>195,65=>195,66=>195,67=>195,68=>195,69=>195,70=>195,71=>195,72=>195,73=>195,74=>195,75=>195,76=>195,77=>195,78=>195,79=>195,80=>195,81=>195,82=>195,83=>195,84=>195,85=>195,86=>195,87=>195,88=>195,89=>195,90=>195,48=>197,49=>197,50=>197,51=>197,52=>197,53=>197,54=>197,55=>197,56=>197,57=>197,34=>769,39=>257,46=>9,44=>9,33=>9,63=>9,58=>9,59=>9,60=>1025,62=>1025,91=>1025,93=>1025,123=>1025,125=>1025,40=>1025,41=>1025,64=>2049,35=>2049,36=>2049);
 	
 	/**
 	 * Установка конфигурации для одного или нескольких тегов
@@ -1604,7 +1605,7 @@ class Qevix
 	 */
 	protected function matchURL(&$url = '')
 	{
-		if(($this->prevCharClass & (self::SPACE | self::NL | self::TEXT_BRACKET)) == self::NIL && $this->prevCharClass != self::NIL) {
+		if(($this->prevCharClass & (self::SPACE | self::NL | self::TEXT_QUOTE | self::TEXT_BRACKET)) == self::NIL && $this->prevCharClass != self::NIL) {
 			return false;
 		}
 		
@@ -1621,15 +1622,33 @@ class Qevix
 			return false;
 		}
 		
+		$openBracket = (($this->prevCharClass & self::TEXT_BRACKET) && isset($this->bracketsALL[$this->prevChar])) ? $this->prevChar : null;
+		$closeBracket = (!is_null($openBracket)) ? $this->bracketsALL[$this->prevChar] : null;
+		
+		$openedBracket = (!is_null($openBracket)) ? 1 : 0;
+		
 		$buffer = "";
-		while($this->curCharClass & self::URL)
+		while($this->curCharClass & self::PRINATABLE)
 		{
-			if($this->curCharClass & self::PUNCTUATUON)
+			if(($this->curCharClass & self::TEXT_QUOTE)) 
+			{
+				break;
+			}
+			else if(($this->curCharClass & self::TEXT_BRACKET) && $openedBracket > 0) 
+			{
+				if($this->curChar == $closeBracket && $openedBracket == 1) {
+					break;
+				}
+				
+				if($this->curChar == $openBracket) { $openedBracket += 1; }
+				if($this->curChar == $closeBracket) { $openedBracket -= 1; }
+			}
+			else if($this->curCharClass & self::PUNCTUATUON)
 			{
 				$this->saveState();
 				$punctuatuon = $this->grabCharClass(self::PUNCTUATUON);
 				
-				if(($this->curCharClass & self::URL) == self::NIL)
+				if(($this->curCharClass & self::PRINATABLE) == self::NIL)
 				{
 					$this->restoreState();
 					break;
@@ -1637,6 +1656,10 @@ class Qevix
 				else {
 					$this->removeState();
 					$buffer .= $punctuatuon;
+					
+					if(($this->curCharClass & (self::TEXT_QUOTE | self::TEXT_BRACKET))) {
+						break;
+					}
 				}
 			}
 
@@ -1685,9 +1708,9 @@ class Qevix
 		$this->saveState();
 		$this->moveNextPos();
 
-		if(($this->curCharClass & self::TEXT_BRACKET) && isset($this->brackets[$this->curChar]))
+		if(($this->curCharClass & self::TEXT_BRACKET) && isset($this->bracketsSPC[$this->curChar]))
 		{
-			$closeBracket = $this->brackets[$this->curChar];
+			$closeBracket = $this->bracketsSPC[$this->curChar];
 			$escape = false;
 			
 			$this->moveNextPos();
