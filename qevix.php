@@ -1792,10 +1792,27 @@ class Qevix
 	 */
 	public static function ord($chr) 
 	{
+		$ord = ord($chr[0]);
+		
+		if($ord < 0x80) return $ord;
+		if($ord < 0xC2) return false;
+		if($ord < 0xE0) return ($ord & 0x1F) <<  6 | (ord($chr[1]) & 0x3F);
+		if($ord < 0xF0) return ($ord & 0x0F) << 12 | (ord($chr[1]) & 0x3F) << 6  | (ord($chr[2]) & 0x3F);          
+		if($ord < 0xF5) return ($ord & 0x0F) << 18 | (ord($chr[1]) & 0x3F) << 12 | (ord($chr[2]) & 0x3F) << 6 | (ord($chr[3]) & 0x3F);
+		
+		return false;
+	}
+	
+	/*
+	 * Медленно!
+	 *
+	public static function ord($chr) 
+	{
 		$result = unpack('N', mb_convert_encoding($chr, 'UCS-4BE', 'UTF-8'));
 		return (is_array($result)) ? $result[1] : false;
 	}
-	
+	*/
+
 	/**
 	 * Возвращает строковое представление символа по его коду
 	 *
@@ -1803,9 +1820,23 @@ class Qevix
 	 * @return string|boolean
 	 */
 	public function chr($ord) 
+	{		
+		if($ord < 0x80)		return chr($ord);
+		if($ord < 0x800) 	return chr(0xC0 | $ord >> 6)  . chr(0x80 | $ord & 0x3F);
+		if($ord < 0x10000) 	return chr(0xE0 | $ord >> 12) . chr(0x80 | $ord >> 6  & 0x3F) . chr(0x80 | $ord & 0x3F);
+		if($ord < 0x110000) return chr(0xF0 | $ord >> 18) . chr(0x80 | $ord >> 12 & 0x3F) . chr(0x80 | $ord >> 6 & 0x3F) . chr(0x80 | $ord & 0x3F);
+		
+		return false;
+	}
+
+	/*
+	 * Медленно...
+	 *
+	public function chr($ord) 
 	{
 		return mb_convert_encoding('&#'.intval($ord).';', 'UTF-8', 'HTML-ENTITIES');
 	}
+	*/
 	
 	/**
 	 * Устанавливает сообщение об ошибке (для внутренних нужд)
