@@ -11,6 +11,8 @@ Qevix основывается на идеях и исходном коде [PHP
 
 * Фильтрация текста с HTML/XHTML разметкой на основе заданных правил о разрешённых тегах и атрибутах;
 * Исправление ошибок HTML/XHTML;
+* Обработка строк предваренных специальными символами (#tagname, @username, $keyword)
+* Установка на теги callback-функций для изменения или сбора информации
 * Предотвращение XSS-атак;
 
 ### Требования
@@ -90,8 +92,8 @@ $qevix->cfgSetTagBuildCallback('code', 'tag_code_build');
 $qevix->cfgSetSpecialCharCallback('#', 'tag_sharp_build');
 $qevix->cfgSetSpecialCharCallback('@', 'tag_at_build');
 
-// 20. Устанавливает на тег событие
-$qevix->cfgSetTagEventCallback('code', 'tag_code_event');
+// 20. Устанавливает на тег callback-функцию, которая сохраняет URL изображений для meta-описания
+$qevix->cfgSetTagEventCallback('img', 'tag_img_event');
 
 //-----
 
@@ -102,15 +104,13 @@ function tag_code_build($tag, $params, $content)
 
 //-----
 
-$tags_counter = array();
+$meta_img_src = array();
 
-function tag_code_event($tag, $params, $content)
+function tag_img_event($tag, $params, $content)
 {
-	if(!isset($tags_counter['code'])) {
-		$tags_counter['code'] = 0;
-	}
-	
-	$tags_counter['code']++;
+	global $meta_img_src;
+
+	$meta_img_src[] = $params['src'];
 }
 
 //-----
@@ -176,6 +176,8 @@ $text = <<<EOD
 Но только не опасная <a href="javascript:alert('Hi!')" title="Нажми на меня">Hello World!</a>
 И без ненужных атрибутов <a href="https://github.com" name="top" hreflang="ru">GitHub</a>
 Или вот такая <a href=http://php.net title = text target=_blank>Я могу определить атрибуты без кавычек!</a>
+
+Использовать изображения <img src="http://php.net/images/news/phpday2012.png" alt="Image">
 
 Могу менять "кавычки" на елочки и "соблюдать "вложенность" кавычек"...
 
