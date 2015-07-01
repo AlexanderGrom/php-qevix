@@ -888,7 +888,7 @@ class Qevix
 			// Просто символ "<"
 			else if($this->curChar == '<')
 			{
-				if($this->tagsRules($this->curTag, self::TAG_NO_TYPOGRAPHY)) {
+				if(!$this->tagsRules($this->curTag, self::TAG_PARENT_ONLY)) {
 					$content .= $this->entities['<'];
 				}
 
@@ -999,6 +999,10 @@ class Qevix
 			return false;
 		}
 
+		if($shortTag && $this->curChar == '/') {
+			$this->moveNextPos();
+		}
+		
 		$this->skipSpaces();
 		
 		if($this->curChar != '>') {
@@ -1630,8 +1634,10 @@ class Qevix
 		$buffer = "";
 		while($this->curCharClass & self::PRINATABLE)
 		{
-			if(($this->curCharClass & self::TEXT_QUOTE)) 
-			{
+			if($this->curChar == "<") {
+				break;
+			}
+			else if(($this->curCharClass & self::TEXT_QUOTE)) {
 				break;
 			}
 			else if(($this->curCharClass & self::TEXT_BRACKET) && $openedBracket > 0) 

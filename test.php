@@ -189,7 +189,7 @@ $text = 'текст http://yandex.ru/?a=href&title=test!..';
 $result = $qevix->parse($text, $errors);
 echo "строка: ".htmlspecialchars($text)."<br>";
 echo "результат: ".htmlspecialchars($result)."<br>";
-echo "предполагалось: ".htmlspecialchars('текст <a href="http://yandex.ru" rel="nofollow">http://yandex.ru</a>!..')."<br><br>";
+echo "предполагалось: ".htmlspecialchars('текст <a href="http://yandex.ru/?a=href&title=test" rel="nofollow">http://yandex.ru/?a=href&title=test</a>!..')."<br><br>";
 
 // #12
 $text = 'текст ftp://yandex.ru!..';
@@ -233,7 +233,7 @@ $text = '<b>"текст" текст "текст "текст" текст" "..."</
 $result = $qevix->parse($text, $errors);
 echo "строка: ".htmlspecialchars($text)."<br>";
 echo "результат: ".htmlspecialchars($result)."<br>";
-echo "предполагалось: ".htmlspecialchars('«текст» текст «текст „текст“ текст» «...»')."<br><br>";
+echo "предполагалось: ".htmlspecialchars('<b>«текст» текст «текст „текст“ текст» «...»</b>')."<br><br>";
 
 // #16
 $text = '<pre>"текст" текст "текст "текст" текст" "..."</pre>';
@@ -273,7 +273,7 @@ $text = 'текст <b>#hashtag #taghash, #htag</b> текст';
 $result = $qevix->parse($text, $errors);
 echo "строка: ".htmlspecialchars($text)."<br>";
 echo "результат: ".htmlspecialchars($result)."<br>";
-echo "предполагалось: ".htmlspecialchars('<b><a href="/search/tag/hashtag/">#hashtag</a> <a href="/search/tag/taghash/">#taghash</a>, <a href="/search/tag/htag/">#htag</a></b> текст')."<br><br>";
+echo "предполагалось: ".htmlspecialchars('текст <b><a href="/search/tag/hashtag/">#hashtag</a> <a href="/search/tag/taghash/">#taghash</a>, <a href="/search/tag/htag/">#htag</a></b> текст')."<br><br>";
 
 // #21
 $text = 'текст <a href="http://ya.ru">текст</a> текст';
