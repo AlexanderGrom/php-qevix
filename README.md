@@ -220,7 +220,7 @@ echo $result;
 
 ### Поддержка
 
-* **Александр Громов** - пишите в [Issues](issues)
+* **Александр Громов** - пишите в [Issues](/AlexanderGrom/Qevix/issues)
 
 ------
 
