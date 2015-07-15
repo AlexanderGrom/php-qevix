@@ -220,7 +220,7 @@ echo $result;
 
 ### Поддержка
 
-* **Александр Громов** - пишите в [Issues](/AlexanderGrom/Qevix/issues)
+* **Александр Громов** - пишите в [Issues](https://github.com/AlexanderGrom/Qevix/issues)
 
 ------
 
