@@ -1312,10 +1312,35 @@ class Qevix
 			}
 
 			// Параметр есть в списке и это массив возможных значений
-			if(is_array($paramAllowedValues) && !in_array($value, $paramAllowedValues))
+			if(is_array($paramAllowedValues))
 			{
-				$this->setError('Недопустимое значение "'.$value.'" для атрибута "'.$param.'" тега "'.$tagName.'"');
-				continue;
+				if(isset($paramAllowedValues['#link']) && is_array($paramAllowedValues['#link']))
+				{
+					if(preg_match('#javascript:#iu', $value)) {
+						$this->setError('Попытка вставить JavaScript в URI');
+						continue;
+					}
+
+					$protocols = implode('|', $this->linkProtocolAllow);
+
+					$found = false;
+					foreach($paramAllowedValues['#link'] as $domain) {
+						$domain = preg_quote($domain);
+						if(preg_match('#^('.$protocols.')://'.$domain.'/?#iu', $value)) {
+							$found = true;
+							break;
+						}
+					}
+					if(!$found) {
+						$this->setError('Недопустимое значение "'.$value.'" для атрибута "'.$param.'" тега "'.$tagName.'"');
+						continue;
+					}
+				}
+				else if(!in_array($value, $paramAllowedValues))
+				{
+					$this->setError('Недопустимое значение "'.$value.'" для атрибута "'.$param.'" тега "'.$tagName.'"');
+					continue;
+				}
 			}
 
 			// Параметр есть в списке и это строка представляющая правило
