@@ -10,75 +10,75 @@ class QevixTests extends PHPUnit_Framework_TestCase
     {
         $qevix = new Qevix();
 
-		// 1. Задает список разрешенных тегов
-		$qevix->cfgAllowTags(array('b', 'i', 'u', 'a', 'img', 'ul', 'li', 'ol', 'br', 'code', 'pre', 'div', 'cut', 'video'));
+        // 1. Задает список разрешенных тегов
+        $qevix->cfgAllowTags(array('b', 'i', 'u', 'a', 'img', 'ul', 'li', 'ol', 'br', 'code', 'pre', 'div', 'cut', 'video'));
 
-		// 2. Указавает, какие теги считать короткими (<br>, <img>)
-		$qevix->cfgSetTagShort(array('br','img','cut', 'video'));
+        // 2. Указавает, какие теги считать короткими (<br>, <img>)
+        $qevix->cfgSetTagShort(array('br','img','cut', 'video'));
 
-		// 3. Указывает преформатированные теги, в которых нужно всё заменять на HTML сущности
-		$qevix->cfgSetTagPreformatted(array('code'));
+        // 3. Указывает преформатированные теги, в которых нужно всё заменять на HTML сущности
+        $qevix->cfgSetTagPreformatted(array('code'));
 
-		// 4. Указывает не короткие теги, которые могут быть пустыми и их не нужно из-за этого удалять
-		$qevix->cfgSetTagIsEmpty(array('div'));
+        // 4. Указывает не короткие теги, которые могут быть пустыми и их не нужно из-за этого удалять
+        $qevix->cfgSetTagIsEmpty(array('div'));
 
-		// 5. Указывает теги внутри которых не нужна авто расстановка тегов перевода на новую строку
-		$qevix->cfgSetTagNoAutoBr(array('ul', 'ol'));
+        // 5. Указывает теги внутри которых не нужна авто расстановка тегов перевода на новую строку
+        $qevix->cfgSetTagNoAutoBr(array('ul', 'ol'));
 
-		// 6. Указывает теги, которые необходимо вырезать вместе с содержимым
-		$qevix->cfgSetTagCutWithContent(array('script', 'object', 'iframe', 'style'));
+        // 6. Указывает теги, которые необходимо вырезать вместе с содержимым
+        $qevix->cfgSetTagCutWithContent(array('script', 'object', 'iframe', 'style'));
 
-		// 7. Указывает теги, после которых не нужно добавлять дополнительный перевод строки, например, блочные теги
-		$qevix->cfgSetTagBlockType(array('ol','ul','code','video'));
+        // 7. Указывает теги, после которых не нужно добавлять дополнительный перевод строки, например, блочные теги
+        $qevix->cfgSetTagBlockType(array('ol','ul','code','video'));
 
-		// 8. Добавляет разрешенные параметры для тегов, значение по умолчанию шаблон #text. Разрешенные шаблоны #text, #int, #link, #regexp(...) (Например: "#regexp(\d+(%|px))")
-		$qevix->cfgAllowTagParams('a', array('title', 'href' => '#link', 'rel' => '#text', 'target' => array('_blank')));
-		$qevix->cfgAllowTagParams('img', array('src' => '#text', 'alt' => '#text', 'title', 'align' => array('right', 'left', 'center'), 'width' => '#int', 'height' => '#int'));
-		$qevix->cfgAllowTagParams('video', array('src' => ['#link' => ['youtube.com','vimeo.com']]));
+        // 8. Добавляет разрешенные параметры для тегов, значение по умолчанию шаблон #text. Разрешенные шаблоны #text, #int, #link, #regexp(...) (Например: "#regexp(\d+(%|px))")
+        $qevix->cfgAllowTagParams('a', array('title', 'href' => '#link', 'rel' => '#text', 'target' => array('_blank')));
+        $qevix->cfgAllowTagParams('img', array('src' => '#text', 'alt' => '#text', 'title', 'align' => array('right', 'left', 'center'), 'width' => '#int', 'height' => '#int'));
+        $qevix->cfgAllowTagParams('video', array('src' => ['#link' => ['youtube.com','vimeo.com']]));
 
 
-		// 9. Добавляет обязательные параметры для тега
-		$qevix->cfgSetTagParamsRequired('a', 'href');
+        // 9. Добавляет обязательные параметры для тега
+        $qevix->cfgSetTagParamsRequired('a', 'href');
         $qevix->cfgSetTagParamsRequired('img', 'src');
-		$qevix->cfgSetTagParamsRequired('video', 'src');
+        $qevix->cfgSetTagParamsRequired('video', 'src');
 
-		// 10. Указывает, какие теги являются контейнерами для других тегов
-		$qevix->cfgSetTagChilds('ul', 'li', true, true);
-		$qevix->cfgSetTagChilds('ol', 'li', true, true);
+        // 10. Указывает, какие теги являются контейнерами для других тегов
+        $qevix->cfgSetTagChilds('ul', 'li', true, true);
+        $qevix->cfgSetTagChilds('ol', 'li', true, true);
 
-		// 11. Указывает, какие теги не должны быть дочерними к другим тегам
-		$qevix->cfgSetTagGlobal('cut');
+        // 11. Указывает, какие теги не должны быть дочерними к другим тегам
+        $qevix->cfgSetTagGlobal('cut');
 
-		// 12. Устанавливаем атрибуты тегов, которые будут добавлятся автоматически
-		$qevix->cfgSetTagParamDefault('a', 'rel', 'nofollow', true);
-		$qevix->cfgSetTagParamDefault('img', 'alt', '');
+        // 12. Устанавливаем атрибуты тегов, которые будут добавлятся автоматически
+        $qevix->cfgSetTagParamDefault('a', 'rel', 'nofollow', true);
+        $qevix->cfgSetTagParamDefault('img', 'alt', '');
 
-		// 13. Указывает теги, в которых нужно отключить типографирование текста
-		$qevix->cfgSetTagNoTypography(array('code', 'pre'));
+        // 13. Указывает теги, в которых нужно отключить типографирование текста
+        $qevix->cfgSetTagNoTypography(array('code', 'pre'));
 
-		// 14. Устанавливает список разрешенных протоколов для ссылок (https, http, ftp)
-		$qevix->cfgSetLinkProtocolAllow(array('http','https'));
+        // 14. Устанавливает список разрешенных протоколов для ссылок (https, http, ftp)
+        $qevix->cfgSetLinkProtocolAllow(array('http','https'));
 
-		// 15. Включает или выключает режим XHTML
-		$qevix->cfgSetXHTMLMode(false);
+        // 15. Включает или выключает режим XHTML
+        $qevix->cfgSetXHTMLMode(false);
 
-		// 16. Включает или выключает режим автозамены символов переводов строк на тег <br>
-		$qevix->cfgSetAutoBrMode(true);
+        // 16. Включает или выключает режим автозамены символов переводов строк на тег <br>
+        $qevix->cfgSetAutoBrMode(true);
 
-		// 17. Включает или выключает режим автоматического определения ссылок
-		$qevix->cfgSetAutoLinkMode(true);
+        // 17. Включает или выключает режим автоматического определения ссылок
+        $qevix->cfgSetAutoLinkMode(true);
 
-		// 18. Задает символ/символы перевода строки. По умполчанию "\n". Разрешено "\n" или "\r\n"
-		$qevix->cfgSetEOL("\n");
+        // 18. Задает символ/символы перевода строки. По умполчанию "\n". Разрешено "\n" или "\r\n"
+        $qevix->cfgSetEOL("\n");
 
-		// 19. Устанавливает на тег callback-функцию
-		$qevix->cfgSetTagBuildCallback('code', [static::class, 'tagCodeBuild']);
+        // 19. Устанавливает на тег callback-функцию
+        $qevix->cfgSetTagBuildCallback('code', [static::class, 'tagCodeBuild']);
 
-		// 20. Устанавливает на строку предварённую спецсимволом (@|#|$) callback-функцию
-		$qevix->cfgSetSpecialCharCallback('#', [static::class, 'tagSharpBuild']);
-		$qevix->cfgSetSpecialCharCallback('@', [static::class, 'tagAtBuild']);
+        // 20. Устанавливает на строку предварённую спецсимволом (@|#|$) callback-функцию
+        $qevix->cfgSetSpecialCharCallback('#', [static::class, 'tagSharpBuild']);
+        $qevix->cfgSetSpecialCharCallback('@', [static::class, 'tagAtBuild']);
 
-		static::$qevix = $qevix;
+        static::$qevix = $qevix;
     }
 
     public static function tearDownAfterClass()
@@ -86,30 +86,30 @@ class QevixTests extends PHPUnit_Framework_TestCase
         static::$qevix = null;
     }
 
-	public static function tagCodeBuild($tag, $params, $content)
-	{
-		return '<pre><code>'.$content.'<code><pre>'."\n";
-	}
+    public static function tagCodeBuild($tag, $params, $content)
+    {
+        return '<pre><code>'.$content.'<code><pre>'."\n";
+    }
 
-	public static function tagSharpBuild($string)
-	{
-		if (!preg_match('#^[\w\_\-\ ]{1,32}$#isu', $string)) {
-			return false;
-		}
+    public static function tagSharpBuild($string)
+    {
+        if (!preg_match('#^[\w\_\-\ ]{1,32}$#isu', $string)) {
+            return false;
+        }
 
-		return '<a href="/search/tag/'.rawurlencode($string).'/">#'.$string.'</a>';
-	}
+        return '<a href="/search/tag/'.rawurlencode($string).'/">#'.$string.'</a>';
+    }
 
-	public static function tagAtBuild($string)
-	{
-		if (!preg_match('#^[\w\_\-]{1,32}$#isu', $string)) {
-			return false;
-		}
+    public static function tagAtBuild($string)
+    {
+        if (!preg_match('#^[\w\_\-]{1,32}$#isu', $string)) {
+            return false;
+        }
 
-		return '<a href="/user/'.$string.'/">@'.$string.'</a>';
-	}
+        return '<a href="/user/'.$string.'/">@'.$string.'</a>';
+    }
 
-	public function textsDataProvider()
+    public function textsDataProvider()
     {
         return array(
             [
@@ -206,12 +206,12 @@ class QevixTests extends PHPUnit_Framework_TestCase
         );
     }
 
-	/**
+    /**
      * @dataProvider textsDataProvider
      */
-	public function testParse($text, $expected)
-	{
-		$result = static::$qevix->parse($text, $errors);
-		$this->assertEquals($result, $expected);
-	}
+    public function testParse($text, $expected)
+    {
+        $result = static::$qevix->parse($text, $errors);
+        $this->assertEquals($result, $expected);
+    }
 }
