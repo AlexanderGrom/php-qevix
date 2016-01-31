@@ -72,11 +72,11 @@ class QevixTests extends \PHPUnit_Framework_TestCase
         $qevix->cfgSetEOL("\n");
 
         // 19. Устанавливает на тег callback-функцию
-        $qevix->cfgSetTagBuildCallback('code', [static::class, 'tagCodeBuild']);
+        $qevix->cfgSetTagBuildCallback('code', [__CLASS__, 'tagCodeBuild']);
 
         // 20. Устанавливает на строку предварённую спецсимволом (@|#|$) callback-функцию
-        $qevix->cfgSetSpecialCharCallback('#', [static::class, 'tagSharpBuild']);
-        $qevix->cfgSetSpecialCharCallback('@', [static::class, 'tagAtBuild']);
+        $qevix->cfgSetSpecialCharCallback('#', [__CLASS__, 'tagSharpBuild']);
+        $qevix->cfgSetSpecialCharCallback('@', [__CLASS__, 'tagAtBuild']);
 
         static::$qevix = $qevix;
     }
