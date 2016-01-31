@@ -1,5 +1,5 @@
 
-## Qevix
+## Qevix  [![Build Status](https://travis-ci.org/AlexanderGrom/php-qevix.svg?branch=master)](https://travis-ci.org/AlexanderGrom/php-qevix)
 
 **Qevix** — Jevix-подобный автоматический фильтр HTML/XHTML разметки в текстах.
 Применяя наборы правил, контролирует перечень допустимых тегов и атрибутов, предотвращает возможные XSS-атаки.
