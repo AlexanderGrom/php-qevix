@@ -2,7 +2,7 @@
 
 require 'qevix.php';
 
-class QevixTests extends PHPUnit_Framework_TestCase
+class QevixTests extends \PHPUnit_Framework_TestCase
 {
     private static $qevix = null;
 
