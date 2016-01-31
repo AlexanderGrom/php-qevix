@@ -179,6 +179,9 @@ class QevixTests extends PHPUnit_Framework_TestCase
                 'текст <a href="http://ya.ru">текст</a> текст',
                 'текст <a href="http://ya.ru" rel="nofollow">текст</a> текст'
             ], [
+                'текст <a href="//ya.ru">текст</a> текст',
+                'текст <a href="//ya.ru" rel="nofollow">текст</a> текст'
+            ], [
                 'текст <a href = "http://ya.ru" title="text" >текст</a> текст',
                 'текст <a href="http://ya.ru" title="text" rel="nofollow">текст</a> текст'
             ], [
@@ -202,6 +205,18 @@ class QevixTests extends PHPUnit_Framework_TestCase
             ], [
                 'текст <video src="http://rutube.ru/1234567890"> текст',
                 'текст текст'
+            ], [
+                'текст <video src="http://youtube.com.exploit.net/1234567890"> текст',
+                'текст текст'
+            ], [
+                'текст <video src="http://youtube.com.exploit.net"> текст',
+                'текст текст'
+            ], [
+                'текст <video src="//youtube.com"> текст',
+                "текст <video src=\"//youtube.com\">\n текст"
+            ], [
+                'текст <video src="//youtube.com/"> текст',
+                "текст <video src=\"//youtube.com/\">\n текст"
             ],
         );
     }
