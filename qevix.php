@@ -284,7 +284,7 @@ class Qevix
      *
      * @param string $tag тег
      * @param string $param атрибут
-     * @param string $value значение
+     * @param sring | boolean $value значение
      * @param boolean $isRewrite перезаписывать значение значением по умолчанию
      */
     public function cfgSetTagParamDefault($tag, $param, $value, $isRewrite = false)
@@ -1005,7 +1005,7 @@ class Qevix
      * @param boolean $shortTag короткий ли тег
      * @return boolean
      */
-    protected function matchTagOpen(&$tagName, &$tagParams, &$shortTag = false)
+    protected function matchTagOpen(&$tagName, &$tagParams, &$shortTag)
     {
         if($this->curChar != '<') {
             return false;
@@ -1100,7 +1100,7 @@ class Qevix
      * @param array $params массив параметров
      * @return boolean
      */
-    protected function matchTagParams(&$params = array())
+    protected function matchTagParams(&$params)
     {
         $name = null;
         $value = null;
@@ -1126,7 +1126,6 @@ class Qevix
     protected function matchTagParam(&$name, &$value)
     {
         $this->saveState();
-
         $this->skipSpaces();
 
         $name = $this->grabCharClass(self::TAG_PARAM_NAME);
@@ -1141,9 +1140,9 @@ class Qevix
         // Параметр без значения
         if($this->curChar != '=')
         {
-            if($this->curChar == '>' || $this->curChar == '/' || $this->curCharClass & self::SPACE)
+            if($this->curChar == '>' || $this->curChar == '/' || (($this->curCharClass & self::TAG_PARAM_NAME) && $this->curChar != '-'))
             {
-                $value = $name;
+                $value = '';
 
                 $this->removeState();
                 return true;
@@ -1295,14 +1294,10 @@ class Qevix
 
         // Параметры тега
         $tagParamsResult = array();
-        foreach($tagParams as $param=>$value)
+        foreach($tagParams as $param => $value)
         {
             $param = mb_strtolower($param, 'UTF-8');
             $value = trim($value);
-
-            if($value == '') {
-                continue;
-            }
 
             // Разрешен ли этот атрибут
             $paramAllowedValues = ($this->tagsRules($tagName, self::TAG_PARAM_ALLOWED, $param)) ? $this->tagsRules[$tagName][self::TAG_PARAM_ALLOWED][$param] : false;
@@ -1320,7 +1315,7 @@ class Qevix
                         $this->setError('Попытка вставить JavaScript в URI');
                         continue;
                     }
-                    
+
                     $protocols = implode('|', array_map(function($item){
                         return $item.":";
                     }, $this->linkProtocolAllow));
@@ -1362,6 +1357,11 @@ class Qevix
                     // ничего не делаем
                 }
 
+                else if($paramAllowedValues == '#bool')
+                {
+                    $value = false;
+                }
+
                 else if($paramAllowedValues == '#link')
                 {
                     if(preg_match('#javascript:#iu', $value)) {
@@ -1373,11 +1373,11 @@ class Qevix
                         $this->setError('Первый символ URL должен быть буквой, цифрой, символами слеша или решетки');
                         continue;
                     }
-                    
+
                     $protocols = implode('|', array_map(function($item){
                         return $item.":";
                     }, $this->linkProtocolAllow));
-                    
+
                     // (http:|https:)? или то, или то, или ничего
                     if(!preg_match('#^('.$protocols.')?\/\/#iu', $value) && !preg_match('#^(\/|\#)#iu', $value) && !preg_match('#^mailto:#iu', $value))
                     {
@@ -1454,7 +1454,15 @@ class Qevix
 
         foreach($tagParamsResult as $param => $value)
         {
-            $text .= ' '.$param.'="'.$value.'"';
+            if ($value === false) {
+                if ($this->isXHTMLMode) {
+                    $text .= ' '.$param.'="'.$param.'"';
+                } else {
+                    $text .= ' '.$param;
+                }
+            } else {
+                $text .= ' '.$param.'="'.$value.'"';
+            }
         }
 
         $text .= ($shortTag && $this->isXHTMLMode) ? '/>' : '>';
@@ -1704,7 +1712,7 @@ class Qevix
         }
 
         $this->saveState();
-        
+
         if($this->matchStr('http://') && in_array('http', $this->linkProtocolAllow)) {}
         else if($this->matchStr('https://') && in_array('https', $this->linkProtocolAllow)) {}
         else if($this->matchStr('ftp://') && in_array('ftp', $this->linkProtocolAllow)) {}

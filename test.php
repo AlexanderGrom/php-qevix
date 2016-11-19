@@ -29,13 +29,13 @@ class QevixTests extends \PHPUnit_Framework_TestCase
         $qevix->cfgSetTagCutWithContent(array('script', 'object', 'iframe', 'style'));
 
         // 7. Указывает теги, после которых не нужно добавлять дополнительный перевод строки, например, блочные теги
-        $qevix->cfgSetTagBlockType(array('ol','ul','code','video'));
+        $qevix->cfgSetTagBlockType(array('ol','ul','code','video','div'));
 
         // 8. Добавляет разрешенные параметры для тегов, значение по умолчанию шаблон #text. Разрешенные шаблоны #text, #int, #link, #regexp(...) (Например: "#regexp(\d+(%|px))")
         $qevix->cfgAllowTagParams('a', array('title', 'href' => '#link', 'rel' => '#text', 'target' => array('_blank')));
         $qevix->cfgAllowTagParams('img', array('src' => '#text', 'alt' => '#text', 'title', 'align' => array('right', 'left', 'center'), 'width' => '#int', 'height' => '#int'));
         $qevix->cfgAllowTagParams('video', array('src' => ['#link' => ['youtube.com','vimeo.com']]));
-
+        $qevix->cfgAllowTagParams('div', array('itemscope' => '#bool', 'itemtype' => '#link', 'class' => '#text'));
 
         // 9. Добавляет обязательные параметры для тега
         $qevix->cfgSetTagParamsRequired('a', 'href');
@@ -135,7 +135,7 @@ class QevixTests extends \PHPUnit_Framework_TestCase
                 '<pre><code>текст &#60;script&#62;текст&#60;/script&#62; текст<code><pre>'
             ], [
                 'текст <div></div> <b></b> текст',
-                'текст <div></div> текст'
+                "текст <div></div>\n текст"
             ], [
                 'текст http://yandex.ru текст',
                 'текст <a href="http://yandex.ru" rel="nofollow">http://yandex.ru</a> текст'
@@ -217,6 +217,12 @@ class QevixTests extends \PHPUnit_Framework_TestCase
             ], [
                 'текст <video src="//youtube.com/"> текст',
                 "текст <video src=\"//youtube.com/\">\n текст"
+            ], [
+                '<div itemscope itemtype="http://schema.org/ImageObject"></div>',
+                '<div itemscope itemtype="http://schema.org/ImageObject"></div>'
+            ], [
+                '<div itemscope itemtype="http://schema.org/ImageObject" class=""></div>',
+                '<div itemscope itemtype="http://schema.org/ImageObject" class=""></div>'
             ],
         );
     }
