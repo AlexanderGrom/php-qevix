@@ -189,13 +189,13 @@ cfgSetTagParamDefault — Указывает значения по умолча�
 **Параметры**
 * $tag — (string) тег
 * $param — (string) атрибут тега
-* $value — (string | boolean) значение арибута
+* $value — (string) значение арибута
 * $isRewrite — (boolean) перезаписывать значение значением по умолчанию
 
 **Пример использования**
 ```php
 $qevix->cfgSetTagParamDefault('a', 'rel', 'nofollow', true);
-$qevix->cfgSetTagParamDefault('a', 'download', false);
+$qevix->cfgSetTagParamDefault('a', 'download', null);
 $qevix->cfgSetTagParamDefault('img', 'alt', '');
 ```
 

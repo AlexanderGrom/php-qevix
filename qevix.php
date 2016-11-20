@@ -284,7 +284,7 @@ class Qevix
      *
      * @param string $tag тег
      * @param string $param атрибут
-     * @param sring | boolean $value значение
+     * @param sring $value значение
      * @param boolean $isRewrite перезаписывать значение значением по умолчанию
      */
     public function cfgSetTagParamDefault($tag, $param, $value, $isRewrite = false)
@@ -1359,7 +1359,7 @@ class Qevix
 
                 else if($paramAllowedValues == '#bool')
                 {
-                    $value = false;
+                    $value = null;
                 }
 
                 else if($paramAllowedValues == '#link')
@@ -1454,7 +1454,7 @@ class Qevix
 
         foreach($tagParamsResult as $param => $value)
         {
-            if ($value === false) {
+            if (is_null($value)) {
                 if ($this->isXHTMLMode) {
                     $text .= ' '.$param.'="'.$param.'"';
                 } else {
